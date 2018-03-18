@@ -20,13 +20,14 @@ Node.js 是一个搭建在 Chrome V8 上的 JavaScript 即时运行平台，采�
 
 ## 几行实用代码
 
-安装使用CNpm：使用淘宝npm镜像，可以提高我们的组件下载数度
+#### 安装使用CNpm：
+使用淘宝npm镜像，可以提高我们的组件下载数度
 
 ```
 npm install -g cnpm --registry=https://registry.npm.taobao.org
 ```
 
-安装前端管理工具 bower：
+#### 安装前端管理工具 bower：
 
 ```
 cnpm install -g bower 
@@ -35,6 +36,49 @@ cnpm install -g bower
 当然也可以使用 npm install * 命令，二者一样，只不过cnpm使用淘宝镜像，在中国安装会快些
 
 bower 是一个 npm 包，它专门用来管理 web 前端（包含js,css,images,fonts等）依赖包。我们可以简单类比，bower 用于管理前端包，npm 管理后台库（包）。
+
+#### 下一步，安装 d3.js
+
+```
+bower install d3 --save
+```
+
+选项 --save 将在 bower.json 文件里，写入下面的信息：
+```
+"dependencies": {
+  ...
+  "d3": "^4.13.0"
+  ...
+}
+```
+
+于是，在另一台电脑开发时，克隆完代码，就可以直接运行下面的命令，**自动安装**全部依赖的第三方组件了
+
+```
+bower intall
+```
+
+和 npm 很像啊是不是～
+
+d3.js 是**数据可视化**非常出名的前端开发包，提供前端可显示的柱状图、饼状图等。
+
+#### gulp
+
+```
+cnpm install gulp --global
+# Then
+cnpm install gulp --save-dev
+```
+
+所以，gulp 是干嘛的？
+
+为了提高页面加载速度，增强用户体验，需要对代码进行合并、压缩，如果要保护自己的劳动，不想被别人无偿使用，还需要对代码进行混淆，最好部署到专门的服务器空间上去。这些工作，可以实现一键操作，这里切入了 gulp！
+
+
+
+
+
+
 
 [本文摘自亿书](http://bitcoin-on-nodejs.ebookchain.org/2-Node.js入门指南/2-Nodejs让您的前端开发像子弹飞一样.html)
 

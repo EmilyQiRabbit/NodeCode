@@ -1,0 +1,17 @@
+{
+  "name": "blockChain",
+  "authors": [
+    "yuqi.liu"
+  ],
+  "description": "The first Node project",
+  "main": "TheVeryFirstNodeProject.js",
+  "keywords": [
+    "Node",
+    "blockChain"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/EmilyQiRabbit/NodeCode",
+  "dependencies": {
+    "d3": "^4.13.0"
+  }
+}
