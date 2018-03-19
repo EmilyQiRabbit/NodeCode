@@ -74,10 +74,37 @@ cnpm install gulp --save-dev
 
 为了提高页面加载速度，增强用户体验，需要对代码进行合并、压缩，如果要保护自己的劳动，不想被别人无偿使用，还需要对代码进行混淆，最好部署到专门的服务器空间上去。这些工作，可以实现一键操作，这里切入了 gulp！
 
+#### 模版引擎
 
+```
+cnpm install ejs --save
+```
 
+ejs，它就像java的jsp，rails的rhtml，可以直接在html文件里嵌入代码，简单好用。
+除了 ejs，还有 hbs 等。目前本喵就是用 hbs 模版配合 React 搭建公司的项目。
 
+```
+------- 其他 ejs 的相关代码 -------
+app.set('views', './views')
+app.set('view engine', 'ejs')
 
+app.get('/', function (req, res) {
+  res.render('index');
+});
+```
+
+#### 使用静态文件服务
+
+```
+app.use(express.static('./public', {
+  maxAge: '0', //no cache
+  etag: true
+}));
+```
+
+上面的代码意思是，在 public 下的文件，包括 js, css, images, fonts等都当作静态文件处理，根路径是 ./public,请求地址就相对于/，比如：./public/js/app.js 文件，请求地址就是http://localhost:8080/js/app.js
+
+>说明：这里有一个小问题，使用bower安装的前端第三方开发包，都在bower_components文件夹下，需要移到public文件夹里。同时需要添加一个.bowerrc文件，告诉bower组件安装目录改变了，并修改gulpfile.js文件。当然也可以连同bower.json文件都拷贝到public文件夹里。
 
 
 [本文摘自亿书](http://bitcoin-on-nodejs.ebookchain.org/2-Node.js入门指南/2-Nodejs让您的前端开发像子弹飞一样.html)
