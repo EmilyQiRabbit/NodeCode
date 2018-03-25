@@ -106,7 +106,13 @@ app.use(express.static('./public', {
 
 >说明：这里有一个小问题，使用bower安装的前端第三方开发包，都在bower_components文件夹下，需要移到public文件夹里。同时需要添加一个.bowerrc文件，告诉bower组件安装目录改变了，并修改gulpfile.js文件。当然也可以连同bower.json文件都拷贝到public文件夹里。
 
+## 三个 Node 思维
 
-[本文摘自亿书](http://bitcoin-on-nodejs.ebookchain.org/2-Node.js入门指南/2-Nodejs让您的前端开发像子弹飞一样.html)
+1、一切都是数据流
+2、事事皆回调
+3、异常要捕捉
+
+
+#### 本文摘自[亿书](http://bitcoin-on-nodejs.ebookchain.org/2-Node.js入门指南/2-Nodejs让您的前端开发像子弹飞一样.html)
 
 
