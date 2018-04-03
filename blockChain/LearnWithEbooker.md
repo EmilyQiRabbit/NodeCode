@@ -2,7 +2,7 @@
 
 本文介绍一些 Node 可用的基本组件、相关代码，以及一些有关区块链的概念。
 
-## CODING PART
+## Part 1. CODING PART
 
 ### commander
 
@@ -30,7 +30,7 @@ program
 node app.js -p 8888
 ```
 
-## CONCEPTS OF BLOCKCHAIN
+## Part 2. CONCEPTS OF BLOCKCHAIN
 
 ### 共识机制
 
