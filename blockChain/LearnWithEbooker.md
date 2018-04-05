@@ -166,7 +166,9 @@ PoW 中，全网矿工都会耗费 CPU/GPU 资源来计算一道题目争夺记�
 
 目前，DPoS 机制是最安全环保、运转高效的共识机制。
 
+## Part 3. SHARE
 
+[深度|在这里读懂比特币与区块链！十万言《比特币无罪》系列重磅开放首章万字文。](https://mp.weixin.qq.com/s/EuwqlE4611Tsfj2f7RpKwQ)
 
 
 
