@@ -1,6 +1,9 @@
-#### 本文摘自[亿书](http://bitcoin-on-nodejs.ebookchain.org/3-源码解读/2-入口程序app.js解读.html)
+#Learn Node.js And BlockChain With Ebook
 
-本文介绍一些 Node 可用的基本组件、相关代码，以及一些有关区块链的概念。
+#### 本文介绍一些 Node 可用的基本组件、相关代码，以及一些有关区块链的概念。
+相关核心文件包括 `nodeService`，`views/index`，`public/js/theFirstNode.js`等
+
+#### 摘自[亿书](http://bitcoin-on-nodejs.ebookchain.org)
 
 ## Part 1. CODING PART
 
@@ -22,8 +25,41 @@ Node.js 是一个搭建在 Chrome V8 上的 JavaScript 即时运行平台，采�
 #### 开发者应该具备的 Node 思维
 
 1、一切都是数据流
+
+**任何流都是时间的函数，为了节省时间、提高效率，最好的方式当然是并行处理。也就是说每一个流使用一个独立的线程，而不影响其他的。事实上，Node.js 就是这么处理的。**
+
 2、事事皆回调
+
 3、异常要捕捉
+
+**Node.js 是单进程(但不是单线程)的应用，异常如果未被正确处理，一旦抛出，就会引起整个进程死掉。**
+
+>这里补充一点，JavaScript 作为浏览器的脚本语言时则是单线程，这也是它的重要特性之一。
+
+而异常多发生在回调函数里，回调非常复杂的时候，异常很难定位。所以，很多人说，Node.js 很快，但很脆弱。
+
+栗子：（错误的）
+
+``` JavaScript
+function myApiFunc(callback)
+{
+    /*
+     * 这种模式并不工作
+     */
+    try {
+      doSomeAsynchronousOperation(function (err) { //异步的原因，这里的回调函数被放在另一个线程独立工作，并不在try/catch下工作
+        if (err)
+          throw (err);
+        /* continue as normal */
+      });
+    } catch (ex) {
+      callback(ex);
+    }
+}
+```
+
+正确的方法：
+Node.js 提供了3种基本的传递模式，分别是 Throw， Callback，以及 EventEmitter。
 
 
 ### 安装使用CNpm：
@@ -76,9 +112,20 @@ cnpm install gulp --global
 cnpm install gulp --save-dev
 ```
 
-所以，gulp 是干嘛的？
+所以，gulp 是干嘛的？（还有类似的 grunt）
 
 为了提高页面加载速度，增强用户体验，需要对代码进行合并、压缩，如果要保护自己的劳动，不想被别人无偿使用，还需要对代码进行混淆，最好部署到专门的服务器空间上去。这些工作，可以实现一键操作，这里切入了 gulp！
+
+设计一个任务，就是建设一条管道，可能涉及到5个方法：
+
+```
+1>构建管道并起个名字用`gulp.task()`，
+2>管道入口方法叫`gulp.src()`（src代表源文件）,
+每一节管道叫`.pipe()`(要用在入口和出口中间，在其中放入各种插件方法，就相当于加了层过滤网),
+3>一直流向管道出口，方法叫`gulp.dest()`（dest英文意思是目标）,
+4>监控水流变化（文件变化）用`gulp.watch`,
+5>综合调度各个管道的运行，用`gulp.run`
+```
 
 ### 模版引擎
 
@@ -111,6 +158,33 @@ app.use(express.static('./public', {
 上面的代码意思是，在 public 下的文件，包括 js, css, images, fonts等都当作静态文件处理，根路径是 ./public,请求地址就相对于/，比如：./public/js/app.js 文件，请求地址就是http://localhost:8080/js/app.js
 
 >说明：这里有一个小问题，使用bower安装的前端第三方开发包，都在bower_components文件夹下，需要移到public文件夹里。同时需要添加一个.bowerrc文件，告诉bower组件安装目录改变了，并修改gulpfile.js文件。当然也可以连同bower.json文件都拷贝到public文件夹里。
+
+### 模块化
+
+
+在 nodeService.js 文件中：
+``` JavaScript
+let nodeModule = require('./public/common/utils')
+console.log(nodeModule.moduleName);
+```
+
+utils.js 文件：
+``` JavaScript
+//公共方法（直接导出模块）
+let firstNodeModule = {
+  moduleName: 'helloWorld'
+} //总之就是一个对象
+
+//私有方法
+function fun1(){}
+
+//导出模块
+module.exports = firstNodeModule;
+```
+
+启动服务后，可以看到终端打印出 helloWorld，表示模块化开发第一步成功。
+
+>Node.js 的模块化非常简单：一个 `module.exports` 可以定义一个模块；一个文件只包含一个模块；只要是模块就可以使用 `require()` 方法在其他地方引用。
 
 ### commander
 
@@ -169,6 +243,10 @@ PoW 中，全网矿工都会耗费 CPU/GPU 资源来计算一道题目争夺记�
 ## Part 3. SHARE
 
 [深度|在这里读懂比特币与区块链！十万言《比特币无罪》系列重磅开放首章万字文。](https://mp.weixin.qq.com/s/EuwqlE4611Tsfj2f7RpKwQ)
+
+## Part 4. Code Of Ebooker
+
+
 
 
 
