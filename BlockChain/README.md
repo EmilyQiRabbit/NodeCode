@@ -246,6 +246,8 @@ PoW 中，全网矿工都会耗费 CPU/GPU 资源来计算一道题目争夺记�
 
 ## Part 4. Code Analyse Of Ebooker
 
+[源码地址](https://github.com/Ebookcoin)
+
 ### 1、入口程序 app.js
 
 [app.js 源码](https://github.com/Ebookcoin/ebookcoin/blob/v0.1.3/app.js)
