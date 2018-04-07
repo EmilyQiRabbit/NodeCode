@@ -244,9 +244,237 @@ PoW 中，全网矿工都会耗费 CPU/GPU 资源来计算一道题目争夺记�
 
 [深度|在这里读懂比特币与区块链！十万言《比特币无罪》系列重磅开放首章万字文。](https://mp.weixin.qq.com/s/EuwqlE4611Tsfj2f7RpKwQ)
 
-## Part 4. Code Of Ebooker
+## Part 4. Code Analyse Of Ebooker
 
+### 1、入口程序 app.js
 
+[app.js 源码](https://github.com/Ebookcoin/ebookcoin/blob/v0.1.3/app.js)
+
+主要工作：配置处理，异常捕捉，模块加载。
+
+**异常捕捉：**
+
+``` JavaScript
+// 捕捉进程异常
+process.on('uncaughtException', function (err) {
+    // handle the error safely
+    logger.fatal('System error', { message: err.message, stack: err.stack });
+    process.emit('cleanup');
+});
+
+// 捕获全局异常
+var d = require('domain').create();
+d.on('error', function (err) {
+    logger.fatal('Domain master', { message: err.message, stack: err.stack });
+    process.exit(0);
+});
+d.run(function () {
+```
+
+**模块加载：** 使用 async 流程管理组件：`var async = require('async');`
+
+### 2、一个 P2P 网络的实现
+
+[peer.js 源码](https://github.com/Ebookcoin/ebookcoin/blob/v0.1.3/modules/peer.js)
+[transport.js 源码](https://github.com/Ebookcoin/ebookcoin/blob/v0.1.3/modules/transport.js)
+[router.js 源码](https://github.com/Ebookcoin/ebookcoin/blob/v0.1.3/helpers/router.js)
+
+#### 1、router.js：路由的定义、设计与实现
+
+```JavaScript
+// 定义了一个 Express 路由器 Router
+var Router = function () {
+    var router = require('express').Router();
+
+    router.use(function (req, res, next) {
+        res.header("Access-Control-Allow-Origin", "*"); // 允许跨域请求：允许任何客户端调用
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        next();
+    });
+
+    router.map = map; // 添加了地址映射方法，map 函数如下所示
+
+    return router;
+}
+
+// 3行
+function map(root, config) {
+    var router = this;
+    Object.keys(config).forEach(function (params) {
+        var route = params.split(" ");
+        if (route.length != 2 || ["post", "get", "put"].indexOf(route[0]) == -1) {
+            throw Error("wrong map config");
+        }
+        router[route[0]](route[1], function (req, res, next) {
+            root[config[params]]({"body": route[0] == "get" ? req.query : req.body}, function (err, response) {
+                if (err) {
+                    res.json({"success": false, "error": err});
+                } else {
+                    return res.json(extend({}, {"success": true}, response));
+                }
+            });
+        });
+    });
+}
+```
+
+这个 map 方法在 peer.js 将会被用到。
+
+#### 2、peer.js：节点路由和节点保存
+
+map 方法的使用：
+
+```JavaScript
+// 34行
+router.map(shared, { // shared 对象有三个方法就分别是：getPeers version 和 getPeer，在 peer.js 文件的最后给出。
+    "get /": "getPeers",
+    "get /version": "version",
+    "get /get": "getPeer"
+});
+```
+
+上面这三行代码结合 map 函数，可以确信 peer.js 文件提供了下面3个公共 Api 地址：
+
+http://ip:port/api/peers/
+http://ip:port/api/peers/version
+http://ip:port/api/peers/get
+
+在 peer.js 中，提供了一系列 Public methods（形如：`Peer.prototype.funcName`），它们的功能包括写入节点。
+
+注：在具体运行过程中，library 就是 app.js 里传过来的 scope。在 app.js 中的相关 dbLite 的代码包括：
+
+```JavaScript
+dbLite: function (cb) {
+  var dbLite = require('./helpers/dbLite.js');
+  dbLite.connect(config.db, cb);
+}
+...
+async.auto({
+  bus: function (cb) {
+    cb(null, scope.bus);
+  },
+  dbLite: function (cb) {
+    cb(null, scope.dbLite);
+  },
+  ...
+)}
+```
+
+好了，下面给出写入节点的实现代码：
+```JavaScript
+// peer.js 347行
+Peer.prototype.onBlockchainReady = function () {
+    async.eachSeries(library.config.peers.list, function (peer, cb) {
+        library.dbLite.query("INSERT OR IGNORE INTO peers(ip, port, state, sharePort) VALUES($ip, $port, $state, $sharePort)", {
+            ip: ip.toLong(peer.ip),
+            port: peer.port,
+            state: 2, //初始状态为2，都是健康的节点
+            sharePort: Number(true)
+        }, cb);
+    }, function (err) {
+        if (err) {
+            library.logger.error('onBlockchainReady', err);
+        }
+
+        privated.count(function (err, count) {
+            if (count) {
+                privated.updatePeerList(function (err) {
+                    err && library.logger.error('updatePeerList', err);
+                    // 364行
+                    // 执行成功，就会调用library.bus.message('peerReady')，进而触发peerReady事件。该事件的功能就是更新节点。
+                    library.bus.message('peerReady');
+                })
+                library.logger.info('Peers ready, stored ' + count);
+            } else {
+                library.logger.warn('Peers list is empty');
+            }
+        });
+    });
+}
+```
+
+这段代码的意思是，当区块链加载完毕的时候触发事件，依次将配置的节点写入数据库，如果数据库已经存在相同的记录就忽略，然后更新节点列表，触发节点加载完毕事件。
+`library.bus.message('peerReady');`：执行成功，就会调用 library.bus.message('peerReady')，进而触发 peerReady 事件（Peer.prototype.onPeerReady 函数将会被执行）。该事件的功能就是**更新节点**。
+
+在这个函数中，用了两个 setImmediate 函数，一个循环更新节点列表，一个循环更新节点状态。
+
+#### 3、transport.js：节点验证、删除与更新
+
+循环更新节点列表时，调用了 transport.js 中的方法 getFromRandomPeer：
+
+```JavaScript
+// transport.js 474行
+Transport.prototype.getFromRandomPeer = function (config, options, cb) {
+    ...
+
+    // 481行
+    async.retry(20, function (cb) {
+        modules.peer.list(config, function (err, peers) {
+            if (!err && peers.length) {
+                var peer = peers[0];
+
+                // 485行
+                self.getFromPeer(peer, options, cb); // 这个函数的定义如下所示
+            } else {
+                return cb(err || "No peers in db");
+            }
+        });
+   ...
+};
+```
+
+getFromPeer 函数是检验处理现存节点的核心函数：
+```JavaScript
+// transport.js 500行
+Transport.prototype.getFromPeer = function (peer, options, cb) {
+    ...
+    var req = {
+        // 519行： 获得节点地址
+        url: 'http://' + ip.fromLong(peer.ip) + ':' + peer.port + url,
+        ...
+    };
+
+    // 532行： 使用`request`组件发送请求
+    return request(req, function (err, response, body) {
+        if (err || response.statusCode != 200) {
+            ...
+            if (peer) {
+                if (err && (err.code == "ETIMEDOUT" || err.code == "ESOCKETTIMEDOUT" || err.code == "ECONNREFUSED")) {
+
+                    // 542行： 对于无法请求的，自然要删除
+                    modules.peer.remove(peer.ip, peer.port, function (err) {
+                    ...
+                    });
+                } else {
+                    if (!options.not_ban) {
+
+                        // 549行： 对于状态码不是200的，比如304等禁止状态，就要更改其状态
+                        modules.peer.state(peer.ip, peer.port, 0, 600, function (err) {
+                        ...
+                        });
+                    }
+                }
+            }
+            cb && cb(err || ('request status code' + response.statusCode));
+            return;
+        }
+
+        ...
+        if (port > 0 && port <= 65535 && response.headers['version'] == library.config.version) {
+            // 595行： 一切问题都不存在
+            modules.peer.update({
+                ip: peer.ip,
+                port: port,
+                state: 2, // 598行： 看来健康的节点状态为2
+                ...
+    });
+}
+```
+
+### 3、加密和验证
+
+> Ebookcoin 没有提供相关扩展，全部使用 Node.js 自己的 crypto 模块进行加密，使用 Ed25519 组件签名认证。
+> 关于加解密技术，业界的通则是：使用现成的组件，严格按照文档去做，这是使用加密解密技术的最安全方式。
 
 
 
