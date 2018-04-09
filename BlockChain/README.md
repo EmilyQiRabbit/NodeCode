@@ -248,6 +248,8 @@ PoW 中，全网矿工都会耗费 CPU/GPU 资源来计算一道题目争夺记�
 
 [源码地址](https://github.com/Ebookcoin)
 
+^ 建议下载所有源码到本地查看，检索会方便很多。
+
 ### 1、入口程序 app.js
 
 [app.js 源码](https://github.com/Ebookcoin/ebookcoin/blob/v0.1.3/app.js)
@@ -592,10 +594,31 @@ Accounts.prototype.generateAddressByPublicKey = function (publicKey) {
 
 ### 6、区块链
 
-区块链的特点：
+[blocks.js 源码](https://github.com/Ebookcoin/ebookcoin/blob/v0.1.3/modules/blocks.js) 
+[block.js 源码](https://github.com/Ebookcoin/ebookcoin/blob/logic/block.js) 
+[loader.js 源码](https://github.com/Ebookcoin/ebookcoin/blob/v0.1.3/modules/loader.js) 
+
+#### 1、区块链的特点
 
 * 分布存储：区块链处于P2P网络之中，无论什么公链、私链，还是联盟链，都要采取分布式存储，使用一种机制保证区块链的同步和统一;
 * 公开透明：**每个节点都有一个区块链副本** ，区块链本身没有加密，数据可以任意检索和查询，甚至可以修改（改了也没用）;
 * 无法篡改：这是加密技术的巧妙应用，每一区块都会记录前一区块的信息，并实现验证，确保无法篡改。这里的无法篡改不是不能改，而是局部修改的数据，无法通过验证，要想通过验证，必须修改整个区块链，这在理论上可行，操作上不可行;
 * 方便追溯：区块链是公开的，从任一区块都可以向前追溯，直到第一个区块，并通过区块查到与之关联的全部交易；
 * 存在分叉：这是由P2P网络等物理环境，以及软件开发实践过程决定的，人们无法根本性杜绝。
+
+#### 2、区块链开发应该解决的问题：
+
+1）加载区块链。确保本地区块链合法，未被篡改。
+
+* 保存创世区块
+* 加载本地区块
+* 验证本地区块
+
+2）处理新区块。加载后，该节点就可以处理网络中的交易了。
+
+* 创建新区块；
+* 收集整理交易，写入（关联）区块；
+* 把新产生的区块写入区块链；
+* 处理区块链分叉。
+
+3）同步区块链。确保本地区块链与网络中完整的区块链同步。
