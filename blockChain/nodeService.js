@@ -37,3 +37,8 @@ app.get('/', function (req, res) {
 // Node 模块化初探：
 let nodeModule = require('./public/common/utils') // 注意路径书写，似乎 ./ 就表示根目录啊 >.<
 console.log(nodeModule.moduleName);
+
+// crypto 加解密初探：
+let cryptoModule = require('./public/common/cryptoTest.js')
+cryptoModule.output()
+

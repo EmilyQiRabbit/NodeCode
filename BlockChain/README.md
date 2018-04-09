@@ -133,7 +133,7 @@ cnpm install gulp --save-dev
 cnpm install ejs --save
 ```
 
-ejs，它就像java的jsp，rails的rhtml，可以直接在html文件里嵌入代码，简单好用。
+ejs，它就像 java 的 jsp，rails 的 rhtml，可以直接在 html 文件里嵌入代码，简单好用。
 除了 ejs，还有 hbs 等。目前本喵就是用 hbs 模版配合 React 搭建公司的项目。
 
 ```
@@ -478,5 +478,124 @@ Transport.prototype.getFromPeer = function (peer, options, cb) {
 > Ebookcoin 没有提供相关扩展，全部使用 Node.js 自己的 crypto 模块进行加密，使用 Ed25519 组件签名认证。
 > 关于加解密技术，业界的通则是：使用现成的组件，严格按照文档去做，这是使用加密解密技术的最安全方式。
 
+Ebookcoin 使用的是 sha256Hash 算法：
 
+```JavaScript
+var hash = crypto.createHash('sha256').update(data).digest() // 生成密文
+```
 
+然后，使用 Ed25519 组件，简单直接地生成对应密钥对：
+
+```JavaScript
+var keypair = ed.MakeKeypair(hash);
+```
+
+验证：
+
+```JavaScript
+var res = ed.Verify(hash, signatureBuffer || ' ', publicKeyBuffer || ' ');
+```
+
+#### Ebooker 的加解密实践
+
+大概流程是：用户密码 -> crypto 加密生成 publicKey -> publicKey 再次进行加密生成 address
+
+> 过程中，对于私钥没有任何处理，直接无视了。这是因为，这里的使用方法 ed25519，基于某个明文密码的处理结果不是随机的，用户只要保护好自己的明文密码字符串，就可以再次生成对应私钥和公钥。
+
+源码：
+
+``` JavaScript
+// modules/accounts 628行
+shared.generatePublickey = function (req, cb) {
+    var body = req.body;
+    library.scheme.validate(body, {
+        ...
+        required: ["secret"]
+    }, function (err) {
+        ...
+    // 644行
+        privated.openAccount(body.secret, function (err, account) {
+            ...
+            cb(err, {
+                publicKey: publicKey
+            });
+        });
+    });
+};
+
+// 447行
+privated.openAccount = function (secret, cb) {
+    var hash = crypto.createHash('sha256').update(secret, 'utf8').digest();
+    var keypair = ed.MakeKeypair(hash);
+
+    self.setAccountAndGet({publicKey: keypair.publicKey.toString('hex')}, cb); // 这个 cb 的意思是 callback
+};
+
+// 482行
+Accounts.prototype.setAccountAndGet = function (data, cb) {
+    var address = data.address || null;
+    if (address === null) {
+        if (data.publicKey) {
+      // 486行
+            address = self.generateAddressByPublicKey(data.publicKey);
+          ...
+        }
+    }
+    ...
+  // 494行
+    library.logic.account.set(address, data, function (err) {
+        ...
+    });
+};
+
+// modules/accounts 455行
+Accounts.prototype.generateAddressByPublicKey = function (publicKey) {
+    var publicKeyHash = crypto.createHash('sha256').update(publicKey, 'hex').digest();
+    var temp = new Buffer(8);
+    for (var i = 0; i < 8; i++) {
+        temp[i] = publicKeyHash[7 - i];
+    }
+
+    var address = bignum.fromBuffer(temp).toString() + 'L';
+    if (!address) {
+        throw Error("wrong publicKey " + publicKey);
+    }
+    return address;
+};
+```
+
+### 4、签名
+
+签名的作用是确定资产所属，其特征是简单、安全、可验证。
+
+数字货币采用数字签名。
+
+一个数字签名体系包含下面的三个算法：
+
+1：`(sk, pk) := generateKeys( keysize )`
+这个操作生产两把钥匙 sk（私钥）和 pk（公钥）。私钥 sk 是一个秘密签名钥匙，是你要签名保护的信息；公钥 pk 是公共验证钥匙，你将公钥公布给所有人，任何人都可以用公钥来验证签名的有效性。
+
+2：`sig := sign( sk , message )`
+签名运算，该运算将私钥和你想要签名的信息作为输入，输出的 sig 是一些字串符，表示你的签名。
+
+3：`sValid := verify( pk , message , sig )`
+验证计算，该计算将签名者的公钥、被签名的信息和签名消息sig作为输入，对该签名是否有效，仅返回是或否。
+
+### 5、交易
+
+一笔交易必须包括下列过程：
+
+>* 生成一笔交易。这里是指一条包含交易双方加密货币地址、数量、时间戳和有效签名等信息，而且不含任何私密信息的合法交易数据;
+>* 广播到网络。几乎每个节点都会获得这笔交易数据。
+>* 验证交易合法性。生成交易的节点和其他节点都要验证，没有得到验证的交易，是不能进入加密货币网络的。
+>* 写入区块链。
+
+### 6、区块链
+
+区块链的特点：
+
+* 分布存储：区块链处于P2P网络之中，无论什么公链、私链，还是联盟链，都要采取分布式存储，使用一种机制保证区块链的同步和统一;
+* 公开透明：**每个节点都有一个区块链副本** ，区块链本身没有加密，数据可以任意检索和查询，甚至可以修改（改了也没用）;
+* 无法篡改：这是加密技术的巧妙应用，每一区块都会记录前一区块的信息，并实现验证，确保无法篡改。这里的无法篡改不是不能改，而是局部修改的数据，无法通过验证，要想通过验证，必须修改整个区块链，这在理论上可行，操作上不可行;
+* 方便追溯：区块链是公开的，从任一区块都可以向前追溯，直到第一个区块，并通过区块查到与之关联的全部交易；
+* 存在分叉：这是由P2P网络等物理环境，以及软件开发实践过程决定的，人们无法根本性杜绝。
