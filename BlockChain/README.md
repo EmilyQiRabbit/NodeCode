@@ -611,14 +611,113 @@ Accounts.prototype.generateAddressByPublicKey = function (publicKey) {
 1）加载区块链。确保本地区块链合法，未被篡改。
 
 * 保存创世区块
+
+对于 ebooker，创世区块是硬编码到客户端程序里的，会在客户端运行的时候，直接写入数据库。这样做的好处是保证每个客户端都有一个安全、可信的区块链的根。
+创世区块的内容保存在文件 genesisBlock.json 中，规定了一些对于整个系统很重要的常量，比如初始代币总量、交易等等。
+
 * 加载本地区块
+
+任何节点，都需要先加载验证本地区块链，确保没有被篡改。
+
+key code: app.js 文件中
+
+```JavaScript
+scope.bus.message("bind", scope.modules);
+```
+
+参考 bus.message 方法：
+
+```JavaScript
+bus: function (cb) {
+    var changeCase = require('change-case');
+    var bus = function () {
+        this.message = function () {
+            var args = [];
+            Array.prototype.push.apply(args, arguments);
+            var topic = args.shift();
+            modules.forEach(function (module) {
+                var eventName = 'on' + changeCase.pascalCase(topic);
+                if (typeof(module[eventName]) == 'function') {
+                    module[eventName].apply(module[eventName], args);
+                }
+            })
+        }
+    }
+    cb(null, new bus)
+}
+```
+
+app.js 文件中: 触发了“bind”事件，会执行所有模块里的“onBind()”方法。
+
+```JavaScript
+// modules/loader.js文件
+Loader.prototype.onBind = function (scope) {
+    modules = scope;
+    // 534行
+    privated.loadBlockChain(); // 加载本地区块
+};
+```
+
 * 验证本地区块
+
+验证的内容包括：
+
+逐个加载区块，并追溯前一区块，无法追溯自然是不正确的。
+verifySignature() 验证块签名，防止块内容被篡改。
+验证块时段（Slot），防止块位置被篡改。
 
 2）处理新区块。加载后，该节点就可以处理网络中的交易了。
 
 * 创建新区块；
 * 收集整理交易，写入（关联）区块；
 * 把新产生的区块写入区块链；
+
+创建新区块调用了“generateBlock()”方法。
+
+```JavaScript
+Blocks.prototype.generateBlock = function (keypair, timestamp, cb) {
+    // 1127行 获取未确认交易，并再次验证，放入一个数组变量里备用
+    var transactions = modules.transactions.getUnconfirmedTransactionList();
+    var ready = [];
+
+    async.eachSeries(transactions, function (transaction, cb) {
+        ...
+        ready.push(transaction);
+        ...
+    }, function () {
+        try {
+            // 1147行
+            var block = library.logic.block.create({ // 创建新的区块，注意下面的参数
+                keypair: keypair,
+                timestamp: timestamp,
+                previousBlock: privated.lastBlock,
+                transactions: ready
+            });
+        } catch (e) {
+            return setImmediate(cb, e);
+        }
+
+        // 1157行 根据需要添加其他数据，新区块写入区块链
+        self.processBlock(block, true, cb);
+    });
+};
+```
+
+如何调用 generateBlock：
+
+```JavaScript
+// modules/delegates.js
+// 735行
+Delegates.prototype.onBlockchainReady = function () { // 当区块链加载验证完毕，就可以创建新区块了
+    privated.loaded = true;
+    privated.loadMyDelegates(function nextLoop(err) {
+        // 743行
+        privated.loop(function () {
+            setTimeout(nextLoop, 1000); // loop 中调用了 generateBlock
+        });
+        ...
+```
+
 * 处理区块链分叉。
 
 3）同步区块链。确保本地区块链与网络中完整的区块链同步。
