@@ -1,6 +1,6 @@
 //公共方法（直接导出模块）
 let firstNodeModule = {
-  moduleName: 'helloWorld'
+  moduleName: 'HelloWorld, This is the very first module!'
 } //总之就是一个对象
 
 //私有方法
