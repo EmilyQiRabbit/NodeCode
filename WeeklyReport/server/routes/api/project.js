@@ -27,7 +27,6 @@ router.post('/list', ( req, res, next ) => {
  */
 router.post('/update', ( req, res, next ) => {
   const params = Object.assign({
-    _id: req.session.user.id,
     updateTime: Date.now()
   }, req.body)
   projectService
@@ -43,7 +42,6 @@ router.post('/update', ( req, res, next ) => {
 router.post('/add', ( req, res, next ) => {
   const params = Object.assign({
   }, req.body);
-  console.log('*******', params);
   projectService
     .createOne(params)
     .then((result) => {

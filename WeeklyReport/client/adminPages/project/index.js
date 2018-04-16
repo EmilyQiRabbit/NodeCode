@@ -25,7 +25,6 @@ class ProjectManage extends Component {
       projectList: []
     }
     this.getProjectList();
-    //this.getDepartmentList();
   }
 
   getProjectList() {
@@ -46,21 +45,6 @@ class ProjectManage extends Component {
     })
   }
 
-  getDepartmentList() {
-    action.postInfo({}).then(() => {
-      
-    }).catch(err => {
-      if ((err.code === '-1' && err.msg === '无权限') || err.toString() === 'Error: 无权限') {
-        this.setState({
-          noPermission: true
-        })
-      } else {
-        message.error(<span>{err.toString()}</span>);
-      }
-    })
-
-  }
-
   editProject = (record, e) => {
     const editParams = {
       projectName: record.projectName,
@@ -69,7 +53,15 @@ class ProjectManage extends Component {
       projectDesc: record.projectDesc,
       projectDepartment: record.projectDepartment,
     }
-
+    if (!this.state.departmentList.length) {
+      action.postInfo({
+        URL: 'department/list'
+      }).then((doc) => {
+        this.setState({
+          departmentList: doc.data.list
+        })
+      })
+    }
     this.setState({
       modalShow: true,
       editParams,
@@ -79,10 +71,15 @@ class ProjectManage extends Component {
 
   deleteProject = (_id, e) => {
     const params = {
-      _id
+      _id,
+      URL: 'project/delete'
     };
-    action.postInfo(params);
-    this.getProjectList();
+    action.postInfo(params).then(() => {
+      message.success(<span>删除成功！</span>)
+      this.getProjectList();
+    }).catch((err) => {
+        message.error(<span>{err}</span>)
+      })
   }
 
   getColumns = (type) => {
@@ -140,10 +137,6 @@ class ProjectManage extends Component {
   }
 
   getPopupContainer = triggerNode => triggerNode.parentNode;
-
-  onSelect = () => {
-    // console.log('onSelect');
-  }
 
   //新增项目框
   getAddField= () => {
@@ -241,8 +234,13 @@ class ProjectManage extends Component {
       if (!err) {
         const searchParams = {
           projectName: values.projectNameSearch,
+          URL: 'project/list'
         };
-        action.postInfo(searchParams);
+        action.postInfo(searchParams).then((doc) => {
+          this.setState({
+            projectList: doc.data.list
+          })
+        })
       }
     });
   }
@@ -255,14 +253,19 @@ class ProjectManage extends Component {
           projectName: values.projectNameAdd,
           projectType: (values.projectTypeAdd === '1'),
           projectDesc: values.projectDescAdd,
-          projectDepartment: values.projectDepartmentAdd
+          projectDepartment: values.projectDepartmentAdd,
+          URL: 'project/add'
         };
-        action.postInfo(addParams);
-        this.getProjectList();
+        action.postInfo(addParams).then(() => {
+          message.success(<span>添加成功！</span>)
+          this.getProjectList();
+          this.setState({
+            modalShow: false,
+          });
+        }).catch((err) => {
+          message.error(<span>{err}</span>)
+        });
       }
-    });
-    this.setState({
-      modalShow: false,
     });
   }
 
@@ -295,14 +298,19 @@ class ProjectManage extends Component {
           projectType: (values.projectType === '1'),
           projectDesc: values.projectDesc,
           projectDepartment: values.projectDepartment,
-          _id: values._id
+          _id: values._id,
+          URL: 'project/update'
         };
-        action.postInfo(params);
-        this.getProjectList();
+        action.postInfo(params).then(() => {
+          message.success(<action.Info>修改成功！</action.Info>)
+          this.setState({
+            modalShow: false,
+          });
+          this.getProjectList();
+        }).catch((err) => {
+          message.error(<span>{err}</span>)
+        })
       }
-    });
-    this.setState({
-      modalShow: false,
     });
   }
 
@@ -420,6 +428,15 @@ class ProjectManage extends Component {
    *
    */
   handleAddPage = () => {
+    if (!this.state.departmentList.length) {
+      action.postInfo({
+        URL: 'department/list'
+      }).then((doc) => {
+        this.setState({
+          departmentList: doc.data.list
+        })
+      })
+    }
     this.setState({
       modalShow: true,
       modalType: 'add'

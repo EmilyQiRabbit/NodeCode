@@ -13,8 +13,8 @@ const SubMenu = Menu.SubMenu;
 function itemRender(route, params, routes, paths) {
   const last = routes.indexOf(route) === routes.length - 1;
   return last ?
-    <span><Icon type={route.icon} style={{marginRight: '3px'}} />{route.breadcrumbName}</span> :
-    <Link to={paths.join('/')}><Icon type={route.icon} style={{marginRight: '3px'}} />{route.breadcrumbName}</Link>;
+    <span><Icon type={route.icon} style={{marginRight: 6}} />{route.breadcrumbName}</span> :
+    <Link to={paths.join('/')}><Icon type={route.icon} style={{marginRight: 3}} />{route.breadcrumbName}</Link>;
 }
 
 export class App extends Component {
@@ -25,9 +25,6 @@ export class App extends Component {
     location: PropTypes.object,
     router: PropTypes.object
   };
-
-  state = {
-  }
 
   goHome = () => {
     this.props.router.push({ pathname: '/' });
@@ -90,19 +87,14 @@ export class App extends Component {
         </Sider>
         <Layout style={{ overflow: 'auto'}}>
           <Header style={{ background: '#fff', padding: 0 }} >
-
             <Menu mode="horizontal" className="ant-avatar-wrap" >
               <SubMenu title={
                 <span className="ant-avatar-wraper">
-                  {userinfo.userName}
+                  Hi，{userinfo.nickName || userinfo.userName}
                 </span>
               }>
-                <Menu.Item key="logout">
-                  <a onClick={this.jump}><Icon type="logout" />退出</a>
-                </Menu.Item>
               </SubMenu>
             </Menu>
-
           </Header>
           <Content style={{ margin: '0 16px' }}>
             <Breadcrumb style={{ margin: '20px 0' }} routes={routes} itemRender={itemRender} />

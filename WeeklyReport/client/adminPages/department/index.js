@@ -31,8 +31,10 @@ class Department extends Component {
   getDepartmentList() {
     action.postInfo({
       URL: 'department/list'
-    }).then(() => {
-      
+    }).then((doc) => {
+      this.setState({
+        departmentList: doc.data.list
+      })
     }).catch(err => {
       if ((err.code === '-1' && err.msg === '无权限') || err.toString() === 'Error: 无权限') {
         this.setState({
@@ -61,10 +63,16 @@ class Department extends Component {
 
   deleteDepartment = (_id, e) => {
     const params = {
+      URL: 'department/delete',
       _id
     };
-    action.postInfo(params);
-    this.getDepartmentList()
+    action.postInfo(params).then(() => {
+      message.success(<span>删除成功！</span>)
+      this.getDepartmentList()
+    }).catch((err) => {
+      message.error(<span>{err}</span>)
+    });
+    
   }
 
   getColumns = () => {
@@ -103,10 +111,6 @@ class Department extends Component {
   }
 
   getPopupContainer = triggerNode => triggerNode.parentNode;
-
-  onSelect = () => {
-    // console.log('onSelect');
-  }
 
   //新增部门框
   getAddField= () => {
@@ -175,8 +179,13 @@ class Department extends Component {
       if (!err) {
         const searchParams = {
           departmentName: values.departmentName_s,
+          URL: 'department/list'
         };
-        action.postInfo(searchParams);
+        action.postInfo(searchParams).then((doc) => {
+          this.setState({
+            departmentList: doc.data.list
+          })
+        })
       }
     });
   }
@@ -187,14 +196,19 @@ class Department extends Component {
       if (!err) {
         const addParams = {
           departmentName: values.departmentNameAdd,
-          departmentDesc: values.departmentDescAdd
+          departmentDesc: values.departmentDescAdd,
+          URL: 'department/add'
         };
-        action.postInfo(addParams);
-        this.getDepartmentList()
+        action.postInfo(addParams).then(() => {
+          message.success(<span>添加成功！</span>)
+          this.getDepartmentList()
+          this.setState({
+            modalShow: false,
+          });
+        }).catch((err) => {
+          message.error(<span>{err}</span>)
+        })
       }
-    });
-    this.setState({
-      modalShow: false,
     });
   }
 
@@ -220,18 +234,24 @@ class Department extends Component {
   handleOk = () => {
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        const params = Object.assign({}, values);
+        const params = Object.assign({
+          URL: 'department/update'
+        }, values);
         for (const key in params) {
           if (key.indexOf('_s') !== -1) {
             delete params[key];
           }
         }
-        action.postInfo(params);
-        this.getDepartmentList()
+        action.postInfo(params).then(() => {
+          message.success(<span>修改成功！</span>)
+          this.getDepartmentList()
+          this.setState({
+            modalShow: false,
+          });
+        }).catch((err) => {
+          message.error(<span>{err}</span>)
+        });
       }
-    });
-    this.setState({
-      modalShow: false,
     });
   }
 
