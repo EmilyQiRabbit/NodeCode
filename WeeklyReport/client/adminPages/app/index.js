@@ -61,7 +61,7 @@ export class App extends Component {
     return (
       <Layout>
         <Sider width={180}>
-          <div className="logo" onClick={this.goHome} />
+          <div className="logo" onClick={this.goHome} >COFFEE INC</div>
           <Menu theme="dark"
                 selectedKeys={[path]}
                 mode="inline"
@@ -111,7 +111,7 @@ export class App extends Component {
             </div>
           </Content>
           <Footer style={{ textAlign: 'center' }}>
-            ©2018 Powered by EmilyQiRabbit
+            © 2018 Powered by EmilyQiRabbit
           </Footer>
         </Layout>
       </Layout>
