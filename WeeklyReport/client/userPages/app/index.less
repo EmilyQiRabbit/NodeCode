@@ -1,0 +1,151 @@
+#main{
+  height: 100%;
+  background: #f0f2f5
+}
+.userPageLayout{
+  height: 100%;
+  display: flex;
+  display: -webkit-flex; /* Safari */
+  overflow: hidden;
+  .menu{
+    z-index: 5;
+    flex-basis: 185px;
+    -webkit-flex-basis: 185px;
+    display: block;
+    background: #fff;
+    .logo{
+      line-height: 50px;
+      height: 50px;
+      font-size: 16px;
+      font-weight: bolder;
+      padding: 0 16px;
+      i{
+        margin-right: 5px;
+      }
+    }
+    .ant-menu{
+      height: 100%;
+      width: 100%;
+      .ant-menu-item{
+        font-size: 14px;
+        width: 185px;
+      }
+    }
+  }
+  > .ant-layout-content{
+    flex: auto;
+    padding: 30px;
+    >div{
+      background: #fff;
+      padding: 50px;
+    }
+    .ant-layout{
+      background: #fff;
+    }
+    .loginPanel{
+      width: 955px;
+      margin: auto;
+    }
+  }
+}
+
+.ant-layout-footer{
+  z-index: 3;
+  letter-spacing: 1px;
+  position: fixed;
+  bottom: 0;
+  padding: 0;
+  width: 100%;
+  height: 50px;
+  line-height: 50px;
+  overflow: hidden;
+  div{
+    width: 50%;
+    white-space: nowrap;
+    overflow: hidden;
+    margin-left: 30%;
+    min-width: 825px;
+  }
+}
+.newReport {
+  min-width: 1000px;
+  height: 100%;
+  overflow-y: auto;
+  margin-top: 5px;
+  input[class=ant-select-search__field]{
+    border-bottom: 0!important
+  }
+  >div{
+    height: auto;
+  }
+  input{
+    border-radius: 0!important;
+  }
+  .ant-layout-content{
+    padding: 35px;
+    .withoutRadius {
+      input {
+        border: 0;
+        border-bottom: 1px #ddd solid;
+      }
+    }
+    .oneBorderInput input{
+      border: 0;
+      border-bottom: 1px #ddd solid;
+    }
+    .oneBorderInput .ant-select-selection{
+      border: 0;
+      border-bottom: 1px #ddd solid;
+      border-radius: 0
+    }
+    .oneBorderInput *{
+      box-shadow: 0 0 0 0 transparent!important;
+    }
+  }
+  .bottomButton {
+    button {
+      float: right;
+      margin-right: 10px;
+      margin-top: 20px;
+      margin-bottom: 100px;
+    }
+    button:first-child {
+      margin-right: 16.2%;
+    }
+  }
+  .ant-table-title {
+    font-size: 14px;
+    font-weight: bold;
+  }
+  table th{
+    background: #eeeeee;
+  }
+  .InputWithSuffix{
+    textarea{
+      padding-right: 20px
+    }
+    button{
+      border: 0;
+      float: right;
+      padding: 0;
+      position: relative;
+      top: -22px;
+      left: -20.8%;
+      color: darkred;
+    }
+  }
+  .ant-btn{
+    height: 25px!important;
+  }
+}
+.ant-select-dropdown-menu-item-disabled{
+  display: none!important;
+}
+.BumblebeeImg {
+  width: 245px;
+  height: 330px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url(./Bumblebee.jpg);
+  background-size: 245px 330px
+}
