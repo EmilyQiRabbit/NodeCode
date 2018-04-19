@@ -66,6 +66,6 @@ DetailSchema.virtual('key').get(function () {
 });
 DetailSchema.set('toJSON', { virtuals: true });
 DetailSchema.set('autoIndex', false)
-DetailSchema.index({userId: 1, reportId: 1, projectId: 1, projectName:1, year: 1, week: 1, type: 1})
+DetailSchema.index({userId: 1, reportId: 1, projectId: 1, projectName: 1, year: 1, week: 1, type: 1})
 
 module.exports = mongoose.model('detail', DetailSchema);

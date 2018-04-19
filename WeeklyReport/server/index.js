@@ -51,16 +51,16 @@ app.use(session({
 }));
 
 try {
-  console.log('准备链接DB：' + DB_URL);
+  console.log(`准备链接DB：${DB_URL}`);
   // var db = mongoose.createConnection();
   // db.openSet(config.dbUrl);
-  mongoose.connection.on('open', function () {
+  mongoose.connection.on('open', () => {
     console.log('连接数据库成功');
 
   });
 
-  mongoose.connection.on('error', function (err) {
-    console.log('连接数据库失败');
+  mongoose.connection.on('error', (err) => {
+    console.log(err, '：连接数据库失败');
   });
   mongoose.Promise = require('bluebird'); //fix DeprecationWarning: Mongoose: mpromise  http://mongoosejs.com/docs/promises.html
   mongoose.connect(DB_URL);

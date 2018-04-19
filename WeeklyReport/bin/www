@@ -53,10 +53,8 @@ function onError(error) {
 
 function onListening() {
   const addr = server.address();
-  const bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-	console.log(addr, bind);
+  const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
+  console.log(addr, bind);
   logger.info('Listening on ' + bind);
   logger.info(`current env is [${process.env.NODE_ENV}]`);
 }
