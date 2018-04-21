@@ -15,7 +15,7 @@ router.post('/query',  ( req, res, next ) => {
   req.session.user = {
     id
   }
-  console.error(req.body);
+  //console.error(req.body);
   const params = {
     //to: req.session.user.id
   }
@@ -111,7 +111,7 @@ router.post('/sended', ( req, res, next ) => {
   }
   // no limit for the value of "type" key
   params.status = 1; // 已发送
-  console.error(params);
+  //console.error(params);
   reportService
   .queryAll(params)
   .then((results) => {
@@ -137,7 +137,7 @@ router.post('/saved', ( req, res, next ) => {
   params.week = moment().weeks()
   params.year = moment().year()
   params.status = 0; // 未发送
-  console.log(params);
+  //console.log(params);
   reportService
   .pageQuery(params)
   .then((results) => {

@@ -48,7 +48,7 @@ const draftService = {
    * @returns {bluebird}
    */
   insertOne: ( params ) => {
-    console.error('insertOne params ---------> ', params);
+    //console.error('insertOne params ---------> ', params);
     const week = moment().weeks()
     const year = moment().year()
     return promise( ( resolve, reject ) => { // Checking if already existed a report this week, if do exist, change it
@@ -65,7 +65,7 @@ const draftService = {
     .then((doc) => {
       return promise((resolve, reject) => {
         if (doc) { // exist a draft, then that user cant create a new report this week.
-          console.log('exist a draft -->', doc)
+          //console.log('exist a draft -->', doc)
           if (doc.details instanceof Array) {
             doc.details.forEach( (detail) => {
               Details.findOne({_id: detail}).exec( (err, detailDoc) => {
@@ -78,7 +78,7 @@ const draftService = {
         }
         // now deal with messages
         const messageArray = params.messages || [];
-        console.error('messageArray ===> ', messageArray);
+        //console.error('messageArray ===> ', messageArray);
         const sendTo = [], copyTo = [];
         messageArray.forEach((message) => {
           if (message.type === 0) { // 0:主送，1:抄送

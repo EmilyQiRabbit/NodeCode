@@ -11,7 +11,7 @@ const {id} = require('../../global')
  */
 router.post('/create', ( req, res, next ) => {
   const {details, messages, userCode, userId} = req.body.report;
-  console.log('/create', req.body.report)
+  //console.log('/create', req.body.report)
   const params = {
     userId,
     userCode,
@@ -45,7 +45,7 @@ router.post('/saved', ( req, res, next ) => {
   } else {
     params.year = Number(year)
   }
-  console.error(params);
+  //console.error(params);
   draftService
   .query(params)
   .then((results) => {

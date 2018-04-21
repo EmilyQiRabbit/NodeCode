@@ -4,6 +4,7 @@
 // 如果 localhost 无法访问，可能需要配置 host switch.
 
 var express = require('express');
+//const bodyParser = require('body-parser');
 var app = express();
 
 // app.get('/', function (req, res) {
@@ -11,13 +12,18 @@ var app = express();
 //   //res.send('Hello World!');
 // });
 
-var server = app.listen(8080, function () {
+var server = app.listen(9090, function () {
   var address = server.address();
   //console.log('Example app listening at address: ', address);
 });
 
 app.set('views', './views') // 过滤器，表示模版放在 ./views 文件下
 app.set('view engine', 'ejs')
+
+// bodyParser
+app.use(bodyParser.json({limit: '20mb'}));
+app.use(bodyParser.urlencoded({limit: '20mb', extended: false}));
+app.use(bodyParser.text());
 
 // 如果没有这个 use 函数的调用，启动服务可能会看到很多的 404 错误，因为我们仅提供了 / 地址下的路由请求，其他任何地址，Node.js都默认转向404错误
 app.use(express.static('./public', {
@@ -29,6 +35,27 @@ app.use(express.static('./public', {
 // 根路径是./public,请求地址就相对于/，比如：./public/js/app.js文件，
 // 请求地址就是http://localhost:3000/js/app.js
 
-app.get('/', function (req, res) {
+// 渲染
+app.get('/', function (req, res, next) {
   res.render('index');
+  next()
 });
+
+
+// 测试中间件
+app.use(function (req, res, next) {
+  console.log(req.query);
+  next()
+});
+
+app.use(function (req, res, next) {
+  console.log('testing use');
+  next()
+});
+
+app.use(function (req, res, next) {
+  console.log('if continue?');
+  next()
+});
+
+

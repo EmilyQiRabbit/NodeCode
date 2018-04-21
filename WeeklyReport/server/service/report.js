@@ -51,7 +51,7 @@ const reportService = {
     })
     // 根据消息查询每一个收到的report: one point we should notice is that, one report might has many messages, so we need to filter the result. 
     .then((messageDocs) => {
-      console.log('messageDocs ==>', messageDocs);
+      //console.log('messageDocs ==>', messageDocs);
       const results = messageDocs.map((item, index) => {
         return promise( ( resolve, reject ) => {
           Report.findOne({_id: item.reportId._id, status: params.status})
@@ -116,7 +116,7 @@ const reportService = {
           finalResults.push(Object.assign({content}, item));
         } 
       })
-      console.log('筛选符合条件的周报------>', finalResults)
+      //console.log('筛选符合条件的周报------>', finalResults)
       return Promise.resolve(finalResults);
     })
     // 整理数据格式 返回
@@ -134,7 +134,7 @@ const reportService = {
    * @returns {bluebird}
    */
   insertOne: ( params ) => {
-    console.error('insertOne params ---------> ', params);
+    //console.error('insertOne params ---------> ', params);
     const week = moment().weeks()
     const year = moment().year()
     return promise( ( resolve, reject ) => { // Checking if already existed a report this week, if do exist, change it
@@ -153,7 +153,7 @@ const reportService = {
     .then((doc) => {
       return promise((resolve, reject) => {
         if (doc) { // exist a report, then that user cant create a new report this week.
-          console.log('exist a report -->', doc)
+          //console.log('exist a report -->', doc)
           if (doc.details instanceof Array) {
             doc.details.forEach( (detail) => {
               Details.findOne({_id: detail._id}).exec( (err, detailDoc) => {
@@ -179,7 +179,7 @@ const reportService = {
         .exec( ( err, userDocs ) => {
           if (err) return reject(err)
           resolve(userDocs)
-          console.error('userDocs --> ', userDocs)
+          //console.error('userDocs --> ', userDocs)
           params.userId = userDocs[0]._id;
           // Now we have userId, then we can create a new report.
           Report.create({
@@ -217,7 +217,7 @@ const reportService = {
             })
             // now deal with messages
             const messageArray = params.messages || [];
-            console.error('messageArray ===> ', messageArray);
+            //console.error('messageArray ===> ', messageArray);
             messageArray.forEach((message) => {
               const userQuery = {
                 _id: message.to
@@ -566,13 +566,13 @@ const reportService = {
    * @param params
    */
   deleteMessageById: ( params ) => {
-    console.log('deleteMessageById ==>', params)
+    //console.log('deleteMessageById ==>', params)
     return promise( ( resolve, reject ) => {
       Message.findOne({
         _id: params.id
       }, ( err, doc ) => {
         if (err) return reject(err)
-        console.log('deleteMessageById ==>', doc)
+        //console.log('deleteMessageById ==>', doc)
         if (doc) {
           doc.remove()
           resolve('成功')
