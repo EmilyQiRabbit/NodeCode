@@ -152,7 +152,7 @@ module.exports.aesEncryption = ( data, key, iv ) => {
   const clearEncoding = 'utf8'
   const cipherEncoding = 'base64'
   const cipherChunks = []
-  let cipher = crypto.createCipheriv( 'aes-128-ecb', key, iv )
+  const cipher = crypto.createCipheriv( 'aes-128-ecb', key, iv )
   cipher.setAutoPadding( true )
   cipherChunks.push( cipher.update( data, clearEncoding, cipherEncoding ) )
   cipherChunks.push( cipher.final( cipherEncoding ) )

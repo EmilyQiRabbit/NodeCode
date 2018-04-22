@@ -4,7 +4,7 @@
 // 如果 localhost 无法访问，可能需要配置 host switch.
 
 var express = require('express');
-//const bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 var app = express();
 
 // app.get('/', function (req, res) {
@@ -57,5 +57,17 @@ app.use(function (req, res, next) {
   console.log('if continue?');
   next()
 });
+
+ // 测试 event -> 自带模块
+var events = require('events');
+var eventEmitter = new events.EventEmitter();
+
+eventEmitter.on('my_event', function() { 
+  console.log('my_event 事件触发'); 
+}); 
+
+setTimeout(function() { 
+  eventEmitter.emit('my_event'); 
+}, 1000); 
 
 
