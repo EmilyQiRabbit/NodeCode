@@ -1,7 +1,7 @@
 title: Node and BlockChain Share
 speaker: Yuqi
 theme: moon
-date: 2018年4月
+date: 2018 年 4 月
 
 [slide]
 
