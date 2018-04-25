@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BlockChain & Node</title>
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+    #main{
+      margin: 50px;
+      padding: 50px;
+      border: 1px #0b59a7 dashed;
+      display: inline-block;
+    }
+    label, input{
+      font-size: 14px;
+    }
+    button{
+      height: 30px;
+      background-color: #00a0e9;
+      color: white;
+      border-radius: 5px;
+      margin-top: 15px;
+      border: 0;
+    }
+    #CheckBoard{
+      padding: 50px;
+      width: 700px;
+      word-wrap: break-word; 
+      word-break: normal;
+    }
+  </style>
+</head>
+<body>
+  <div id="main">
+    <div>
+      <label for='secrets'>添加区块链（挖矿）</label><input type='input' id='secrets' placeholder="输入 secrets"></input>
+    </div>
+    <button onclick="addBlock()" >创建区块</button>
+    <button onclick="checkBlockchain()" >查看当前区块链</button>
+  </div>
+  <div id='CheckBoard'></div>
+
+  <script src='./js/BlockChainMain.js'></script>
+
+  <script>
+    
+  </script>
+</body>
+</html>

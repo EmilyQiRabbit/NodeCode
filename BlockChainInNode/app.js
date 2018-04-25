@@ -3,17 +3,13 @@
 // 运行它需要在控制台输入：node fileName.js
 // 如果 localhost 无法访问，可能需要配置 host switch.
 
-var express = require('express');
+const express = require('express');
+const router = express.Router()
 const bodyParser = require('body-parser');
-var app = express();
+const app = express();
 
-// app.get('/', function (req, res) {
-//   console.log('visiter comes');
-//   //res.send('Hello World!');
-// });
-
-var server = app.listen(9090, function () {
-  var address = server.address();
+const server = app.listen(9090, function () {
+  const address = server.address();
   //console.log('Example app listening at address: ', address);
 });
 
@@ -35,12 +31,19 @@ app.use(express.static('./public', {
 // 根路径是./public,请求地址就相对于/，比如：./public/js/app.js文件，
 // 请求地址就是http://localhost:3000/js/app.js
 
-// 渲染
-app.get('/', function (req, res, next) {
-  res.render('index');
+// 渲染 blockChain
+app.get('/blockChain', function (req, res, next) {
+  res.render('TheBlockChain');
   next()
 });
 
+// 渲染 d3Chart
+app.get('/d3Chart', function (req, res, next) {
+  res.render('theFirstNodeWithD3');
+  next()
+});
+
+app.use('/api', require('./router/blockRouter'))
 
 // 测试中间件
 app.use(function (req, res, next) {

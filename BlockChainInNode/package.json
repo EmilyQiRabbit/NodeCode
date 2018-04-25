@@ -10,14 +10,12 @@
   "scripts": {
     "start": "node nodeService"
   },
-  "devDependencies": {
-
-  },
   "dependencies": {
     "ejs": "^2.5.7",
     "express": "^4.16.3",
     "body-parser": "^1.17.2",
     "ed25519": "0.0.4",
-    "gulp": "^3.9.1"
+    "gulp": "^3.9.1",
+    "babel-core": "^6.25.0"
   }
 }

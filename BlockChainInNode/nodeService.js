@@ -13,9 +13,10 @@ if (cluster.isMaster) {
   // crypto 加解密初探：
   let cryptoModule = require('./public/common/cryptoTest.js')
   cryptoModule.output()
+  require("./app.js");
   // ...
 } else {
-  require("./app.js");
+  console.log('This is a test about Cluster.')
 }
 
 /*
