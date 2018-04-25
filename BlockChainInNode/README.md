@@ -4,7 +4,7 @@
 访问地址：http://localhost:9090/blockChain
 
 #### 本文介绍一些 Node 可用的基本组件、相关代码，以及一些有关区块链的概念。
-相关核心文件包括 `nodeService`，`views/index`，`public/js/theFirstNode.js`等
+相关核心文件包括 `nodeService`，`views/*`，`public/js/*.js`等
 
 #### 摘自[亿书](http://bitcoin-on-nodejs.ebookchain.org)
 
@@ -160,10 +160,9 @@ app.use(express.static('./public', {
 
 上面的代码意思是，在 public 下的文件，包括 js, css, images, fonts等都当作静态文件处理，根路径是 ./public,请求地址就相对于/，比如：./public/js/app.js 文件，请求地址就是http://localhost:8080/js/app.js
 
->说明：这里有一个小问题，使用bower安装的前端第三方开发包，都在bower_components文件夹下，需要移到public文件夹里。同时需要添加一个.bowerrc文件，告诉bower组件安装目录改变了，并修改gulpfile.js文件。当然也可以连同bower.json文件都拷贝到public文件夹里。
+>说明：这里有一个小问题，使用 bower 安装的前端第三方开发包，都在 bower_components 文件夹下，需要移到 public 文件夹里。同时需要添加一个 .bowerrc 文件，告诉 bower 组件安装目录改变了，并修改 gulpfile.js 文件。当然也可以连同 bower.json 文件都拷贝到 public 文件夹里。
 
 ### 模块化
-
 
 在 nodeService.js 文件中：
 ``` JavaScript
