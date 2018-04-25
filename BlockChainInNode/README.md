@@ -1,6 +1,6 @@
-#Learn Node.js And BlockChain With Ebook
+# Learn Node.js And BlockChain With Ebook
 
-#另外，运行本模块内代码可以实现一个 Node 上的 BlockChain 并实现了挖矿过程哦～
+# 另外，运行本模块内代码可以实现一个 Node 上的 BlockChain 并实现了挖矿过程哦～
 访问地址：http://localhost:9090/blockChain
 
 #### 本文介绍一些 Node 可用的基本组件、相关代码，以及一些有关区块链的概念。
