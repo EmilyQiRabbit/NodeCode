@@ -39,7 +39,7 @@ Just a very simple example 😋
 （伍）共识机制：工作量证明 PoW
 </div>
 <div style='text-align: left; margin-left: 35%; line-height: 65px'>
-（陆） P2P 网络
+（陆）P2P 网络
 </div>
 
 [slide]
@@ -295,11 +295,28 @@ Block.prototype.verifySignature = function (block) {
 
 -------
 
-### （伍）什么是 PoW ？
+### 什么是 PoW ？
 
 -------
 
 > PoW（Proof of Work）的原理非常简单，就是多劳多得：你付出多少劳动（劳动 = 计算服务 = 算力x时长），就会获得多少报酬（加密货币）。比特币的共识机制就是 PoW。
+
+[slide]
+
+# （伍）三种共识机制
+
+## **1、PoW(Proof of Work)：工作量证明机制**
+
+## **2、PoS(Proof of Stake)：股权证明机制**
+
+PoW 其实是非常**浪费资源**的。
+而 PoS 则是另一机制，这一机制下不用挖矿，而是一个根据用户持有货币的多少和时间（币龄），发放利息。而创建新区块的权利则是根据用户持有的货币的多少和时间来选择决定的。
+
+## **3、DPoS(Delegated)：授权股权证明机制**
+
+>对于 PoS 机制的加密货币，每个节点都可以创建区块，并按照个人的持股比例获得“利息”。而 DPoS 是由被社区选举的可信帐户（受托人，得票数排行前101位）来创建区块。为了成为正式受托人，用户要去社区拉票，获得足够多用户的信任。用户根据自己持有的加密货币数量占总量的百分比来投票。DPoS机制类似于股份制公司，普通股民进不了董事会，要投票选举代表（受托人）代他们做决策。
+
+目前，DPoS 机制是最安全环保、运转高效的共识机制。
 
 [slide]
 
@@ -458,7 +475,7 @@ try {
 	return cb("Invalid peer");
 }
 
-privated.getByFilter({ // 涉及到 dblite 第三方组件，dblite 完成了对 sqlite 数据库的简单封装
+privated.getByFilter({ // 涉及到 dblite 第三方组件，dblite 完成了对 sqlite 数据库的封装
 
 	// 🙋（看这里）sqlite 是一款轻量级的数据库，
 	// 在 node 中使用它可以用 sqlite3：npm install sqlite3 就好 🎉
@@ -522,3 +539,60 @@ Peer.prototype.onBlockchainReady = function () {
     });
 }
 ```
+
+[slide]
+
+# （陆） P2P 网络之路由扩展（亿书）
+
+-----
+
+bus.message 方法
+
+-----
+
+```JavaScript
+bus: function (cb) {
+	var changeCase = require('change-case');// String 变换
+	var bus = function () {
+		this.message = function () {
+			var args = [];
+			Array.prototype.push.apply(args, arguments);
+			var topic = args.shift();
+			modules.forEach(function (module) {
+				var eventName = 'on' + changeCase.pascalCase(topic);
+				if (typeof(module[eventName]) == 'function') {
+					module[eventName].apply(module[eventName], args);
+				}
+			})
+		}
+	}
+	cb(null, new bus)
+},
+```
+
+[slide]
+
+# 总结一下今天的知识点
+
+<div style='text-align: left; margin-left: 25%; line-height: 65px'>
+（壹）区块链是什么，区块链的特点
+</div>
+<div style='text-align: left; margin-left: 25%; line-height: 65px'>
+（贰）一个简单 Node 服务的搭建
+</div>
+<div style='text-align: left; margin-left: 25%; line-height: 65px'>
+（叁）区块结构，创世区块
+</div>
+<div style='text-align: left; margin-left: 25%; line-height: 65px'>
+（肆）哈希算法，加密和签名：crypto ed25519
+</div>
+<div style='text-align: left; margin-left: 25%; line-height: 65px'>
+（伍）共识机制：工作量证明 PoW
+</div>
+<div style='text-align: left; margin-left: 25%; line-height: 65px'>
+（陆）亿书的 P2P 网络源码解析
+</div>
+
+[slide]
+
+# 🌸 蟹蟹大家 🌸
