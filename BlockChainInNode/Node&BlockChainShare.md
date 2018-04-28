@@ -139,6 +139,11 @@ function calculateHash(block) {
   return crypto.createHash('sha256').update(record).digest('hex');
 }
 ```
+
+------
+
+[In case you'd like to dig deep 🙋 ：SHA-256 算法实现](https://blog.csdn.net/lwanttowin/article/details/53726450)
+
 [slide]
 
 # （肆）签名和加密 -- 签名
