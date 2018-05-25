@@ -39,8 +39,13 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('push', event => {
+  const title = 'Push Codelab';
+  const options = {
+    body: 'Yay it works.'
+  };
+
   event.waitUntil(
     // Process the event and display a notification.
-    self.registration.showNotification("Hey!")
+    self.registration.showNotification(title, options)
   );
 });

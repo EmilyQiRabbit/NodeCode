@@ -20,27 +20,50 @@
   </div>
   <a href='./pwa/cache.html'>Link to other page</a>
   <script>
-    if(navigator.serviceWorker){
+    if(navigator.serviceWorker && 'PushManager' in window){
       // For security reasons, a service worker can only control the pages
       // that are in the same directory level or below it. That's why we put sw.js at ROOT level.
-      navigator.serviceWorker
-        .register('./pwa/sw.js')
-        .then(() => {
-          console.log('ServiceWorker registration successed.')
+      navigator.serviceWorker.register('./pwa/sw.js')
+      .then((swReg) => {
+        console.log('ServiceWorker registration successed：', swReg)
+
+        return swReg.pushManager.subscribe({
+          userVisibleOnly: true,
+          // 如何生成密钥：https://web-push-codelab.glitch.me/
+          applicationServerKey: urlB64ToUint8Array('BMukUJRwhAeyiMpz3eZEciNlphG2fJ4Etd6Xa3fF4OEIuFGLyUY51h8Sw7y9FgxJetFOtsXygr9hVqwS1OZ7UJI')
         })
-        .catch((error) => {console.log('ServiceWorker registration failed: ', error)})
+      })
+      .then((pushSubscription) => {
+        console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
+        return pushSubscription;
+      })
+      .catch((error) => {console.log('ServiceWorker registration failed: ', error)})
     }
-    Notification.requestPermission().then(function(permission) {
-      if(permission === 'granted'){
-        console.log('用户允许通知');
-        var n = new Notification('用户通知',{
-          body: 'yuqiTestNotification',
-          requireInteraction: true
-        })
-      }else if(permission === 'denied'){
-        console.log('用户拒绝通知');
+    function urlB64ToUint8Array(base64String) {
+      const padding = '='.repeat((4 - base64String.length % 4) % 4);
+      const base64 = (base64String + padding)
+        .replace(/\-/g, '+')
+        .replace(/_/g, '/');
+
+      const rawData = window.atob(base64);
+      const outputArray = new Uint8Array(rawData.length);
+
+      for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
       }
-    });
+      return outputArray;
+    }
+    // Notification.requestPermission().then(function(permission) {
+    //   if(permission === 'granted'){
+    //     console.log('用户允许通知');
+    //     var n = new Notification('用户通知',{
+    //       body: 'yuqiTestNotification',
+    //       requireInteraction: true
+    //     })
+    //   }else if(permission === 'denied'){
+    //     console.log('用户拒绝通知');
+    //   }
+    // });
   </script>
 </body>
 </html>
