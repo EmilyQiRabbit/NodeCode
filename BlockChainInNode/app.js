@@ -37,6 +37,12 @@ app.get('/blockChain', function (req, res, next) {
   next()
 });
 
+// 尝试 pwa
+app.get('/PWAFirstTaste', function (req, res, next) {
+  res.render('PWAFirstTaste');
+  next()
+});
+
 // 渲染 d3Chart
 app.get('/d3Chart', function (req, res, next) {
   res.render('theFirstNodeWithD3');

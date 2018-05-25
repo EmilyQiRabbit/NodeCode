@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="manifest" href="./pwa/manifest.json">
+  <title>PWA: Web App Manifest</title>
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+    .pwa{
+      font-size: 2em
+    }
+  </style>
+</head>
+<body>
+  <div id="main" class='pwa'>
+    PWA: Web App Manifest
+  </div>
+  <a href='./pwa/cache.html'>Link to other page</a>
+  <script>
+    if(navigator.serviceWorker){
+      // For security reasons, a service worker can only control the pages
+      // that are in the same directory level or below it. That's why we put sw.js at ROOT level.
+      navigator.serviceWorker
+        .register('./pwa/sw.js')
+        .then(() => {
+          console.log('ServiceWorker registration successed.')
+        })
+        .catch((error) => {console.log('ServiceWorker registration failed: ', error)})
+    }
+  </script>
+</body>
+</html>
