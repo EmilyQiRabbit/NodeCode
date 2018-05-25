@@ -37,3 +37,10 @@ self.addEventListener('fetch', event => {
 self.addEventListener('activate', event => {
   console.log('sw activate')
 });
+
+self.addEventListener('push', event => {
+  event.waitUntil(
+    // Process the event and display a notification.
+    self.registration.showNotification("Hey!")
+  );
+});

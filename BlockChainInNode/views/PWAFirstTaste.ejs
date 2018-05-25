@@ -30,6 +30,17 @@
         })
         .catch((error) => {console.log('ServiceWorker registration failed: ', error)})
     }
+    Notification.requestPermission().then(function(permission) {
+      if(permission === 'granted'){
+        console.log('用户允许通知');
+        var n = new Notification('用户通知',{
+          body: 'yuqiTestNotification',
+          requireInteraction: true
+        })
+      }else if(permission === 'denied'){
+        console.log('用户拒绝通知');
+      }
+    });
   </script>
 </body>
 </html>
