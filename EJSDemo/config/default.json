@@ -1,0 +1,5 @@
+{
+   "mode": "development",
+   "listenPort": 8080,
+   "serviceTemplateFile": "./views/template.ejs"
+ }
